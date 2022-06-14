@@ -19,12 +19,14 @@ class ProjectController extends Controller
     {
         $request->validate([
             'title' => 'required',
-            'description' => 'required'
+            'description' => 'required',
+            'owner_id' => 'required'
         ]);
 
         Project::create([
             'title' => $request->title,
             'description' => $request->description,
+            'owner_id' => $request->owner_id,
         ]);
 
         return redirect('/projects');

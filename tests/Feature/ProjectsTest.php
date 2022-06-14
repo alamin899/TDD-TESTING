@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -32,13 +33,10 @@ class ProjectsTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $attributes = [
-            'title' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
-        ];
+        $attributes = Project::factory()->raw();
 
         /* route for store project */
-//        $this->post('/projects', $attributes); //this is only store data
+        //$this->post('/projects', $attributes); //this is only store data
         $this->post('/projects', $attributes)->assertRedirect('/projects'); //after post expect redirect
 
         /* doing expect that has table name in db is projects with data */
@@ -89,5 +87,23 @@ class ProjectsTest extends TestCase
         $this->get($project->path())
             ->assertSee($project->title)
             ->assertSee($project->description);
+    }
+    /** @test */
+    public function a_project_required_an_owner()
+    {
+        $attribute = Project::factory()->raw(['owner_id' => '']);
+
+        $this->post('/projects', $attribute)->assertSessionHasErrors('owner_id');
+    }
+
+
+    /** @test */
+    public function athenticate_user_can_create_project()
+    {
+        $this->actingAs(User::factory()->create());
+
+        $attribute = Project::factory()->raw(['owner_id' => '']);
+
+        $this->post('/projects', $attribute)->assertSessionHasErrors('owner_id');
     }
 }
