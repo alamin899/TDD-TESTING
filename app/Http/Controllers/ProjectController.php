@@ -29,4 +29,12 @@ class ProjectController extends Controller
 
         return redirect('/projects');
     }
+
+
+    public function show()
+    {
+        $project = Project::findOrFail(\request('project')); //request('project') url parameter
+
+        return view('projects.show',compact('project'));
+    }
 }
